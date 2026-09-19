@@ -1,14 +1,6 @@
+
 from django.db import models
-
-
-class TafsirSource(models.Model):
-    # هذا هو رقم التفسير مثل: 14 = ابن كثير
-    source_id = models.IntegerField(unique=True)
-    name = models.CharField(max_length=255)
-    language = models.CharField(max_length=20)
-
-    def __str__(self):
-        return f"{self.name} ({self.language})"
+from django.conf import settings
 
 
 class Surah(models.Model):
@@ -32,16 +24,7 @@ class Verse(models.Model):
 
 
 
-class TafsirVerse(models.Model):
-    verse = models.ForeignKey(Verse, on_delete=models.CASCADE)
-    source = models.ForeignKey(TafsirSource, on_delete=models.CASCADE)
-    text = models.TextField()
 
-    class Meta:
-        unique_together = ('verse', 'source')
-
-    def __str__(self):
-        return f"{self.source.name} - {self.verse}"
 
 class SurahAudio(models.Model):
     surah = models.ForeignKey( Surah,on_delete=models.CASCADE,related_name='audios')
@@ -57,4 +40,47 @@ class SurahAudio(models.Model):
 
     def __str__(self):
         return f"{self.reciter_ar} - سورة {self.surah.number}"
+    
+class StudentRecitation(models.Model):
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    verse = models.ForeignKey(
+        Verse,
+        on_delete=models.CASCADE
+    )
+
+    audio_file = models.FileField(
+        upload_to='student_recitations/'
+    )
+
+    recognized_text = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    score = models.FloatField(
+        default=0
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    wrong_words = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    comparison = models.JSONField(
+        default=list,
+        blank=True
+    )
+
+    statistics = models.JSONField(
+        default=dict,
+        blank=True
+    )

@@ -4,8 +4,20 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from django.contrib.auth import  get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import UserSerializer
 from .permissions import IsTeacher, IsStudent
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+from .models import User
+from .serializers import StudentListSerializer
+from .permissions import IsTeacher
+from django.shortcuts import get_object_or_404
+from quran_app.models import StudentRecitation
+from .serializers import StudentRecitationSerializer
+
 
 User = get_user_model()
 
@@ -42,14 +54,46 @@ class LoginView(APIView):
 
         return Response({"error": "Invalid credentials"}, status=400)
 
-class TeacherOnlyView(APIView):
-    permission_classes = [IsAuthenticated, IsTeacher]
+
+class StudentListView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        IsTeacher
+    ]
 
     def get(self, request):
-        return Response({"msg": "Welcome teacher!"})
 
-class StudentOnlyView(APIView):
-    permission_classes = [IsAuthenticated, IsStudent]
+        students = User.objects.filter(role="student")
 
-    def get(self, request):
-        return Response({"msg": "Welcome student!"})
+        serializer = StudentListSerializer(
+            students,
+            many=True
+        )
+
+        return Response(serializer.data)
+class StudentRecitationsView(APIView):
+
+    permission_classes = [
+        IsAuthenticated,
+        IsTeacher
+    ]
+
+    def get(self, request, student_id):
+
+        student = get_object_or_404(
+            User,
+            id=student_id,
+            role="student"
+        )
+
+        recitations = StudentRecitation.objects.filter(
+            user=student
+        ).order_by("-created_at")
+
+        serializer = StudentRecitationSerializer(
+            recitations,
+            many=True
+        )
+
+        return Response(serializer.data)

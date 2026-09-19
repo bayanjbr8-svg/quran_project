@@ -7,8 +7,8 @@ class User(AbstractUser):
         ('teacher', 'Teacher'),
     )
 
-    email = models.EmailField(unique=True)   # ← إضافة الإيميل وفريد
+    email = models.EmailField(unique=True)  
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
 
-    REQUIRED_FIELDS = ["email"]  # ← هاد مهم جداً
+    REQUIRED_FIELDS = ["email"]  
