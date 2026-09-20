@@ -16,6 +16,7 @@ urlpatterns = [
     path("api/users/", include("users.urls")),
     path("api/quizzes/", include("quizzes.urls")),
     path("courses/", include("courses.urls")),
-    path('api-auth/', include('rest_framework.urls')),
-  ]
+    path("notifications/", include("notifications.urls")),
+    path("ai/", include("ai_assistant.urls")),
+]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

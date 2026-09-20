@@ -1,11 +1,19 @@
 from django.db import models
 from django.conf import settings
 
+
+
 User = settings.AUTH_USER_MODEL
 
 class Lesson(models.Model):
     title = models.CharField(max_length=200)
     video = models.FileField(upload_to="lessons/videos/", null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    material = models.FileField(
+        upload_to="lessons/materials/",
+        null=True,
+        blank=True
+    )
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lessons")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -36,3 +44,27 @@ class LessonRating(models.Model):
 
     def __str__(self):
         return f"{self.rating} ⭐ - {self.lesson}"
+    
+
+    
+class LessonProgress(models.Model):
+
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name="progress"
+    )
+
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("student", "lesson")
+
+    def __str__(self):
+        return f"{self.student} - {self.lesson}"

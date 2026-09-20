@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Quiz, Question, Choice, QuizResult
 
+
 #"الاختيار"
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,4 +32,47 @@ class QuizResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QuizResult
-        fields = ["id", "quiz", "user", "score", "submitted_at"]   
+        fields = ["id", "quiz", "student", "score", "passed", "completed_at"] 
+        
+          
+class ChoiceCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = ["text", "is_correct"]
+
+
+class QuestionCreateSerializer(serializers.ModelSerializer):
+    choices = ChoiceCreateSerializer(many=True)
+
+    class Meta:
+        model = Question
+        fields = ["text", "choices"]
+
+
+class QuizCreateSerializer(serializers.ModelSerializer):
+    questions = QuestionCreateSerializer(many=True)
+
+    class Meta:
+        model = Quiz
+        fields = ["lesson", "title", "questions"]
+
+    def create(self, validated_data):
+        questions_data = validated_data.pop("questions")
+
+        quiz = Quiz.objects.create(**validated_data)
+
+        for q_data in questions_data:
+            choices_data = q_data.pop("choices")
+
+            question = Question.objects.create(
+                quiz=quiz,
+                **q_data
+            )
+
+            for c_data in choices_data:
+                Choice.objects.create(
+                    question=question,
+                    **c_data
+                )
+
+        return quiz        

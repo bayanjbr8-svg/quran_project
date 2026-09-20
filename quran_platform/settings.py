@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +47,10 @@ INSTALLED_APPS = [
     'users' ,
     'courses',
     'corsheaders',
-    'quizzes'
+    'quizzes',
+    'notifications',
+    'ai_assistant',
+
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -157,3 +164,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+

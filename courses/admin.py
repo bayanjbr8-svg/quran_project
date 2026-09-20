@@ -5,5 +5,7 @@ class LessonAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "teacher", "created_at")
 
 # Register your other models
+
+admin.site.register(Lesson)
 admin.site.register(LessonComment)
 admin.site.register(LessonRating)

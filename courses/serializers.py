@@ -4,7 +4,7 @@ from .models import Lesson, LessonComment, LessonRating
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = ["id", "title", "video", "teacher", "created_at"]
+        fields = ["id", "title", "material", "video", "description", "teacher", "created_at"]
         read_only_fields = ["teacher", "created_at"]
 
 
